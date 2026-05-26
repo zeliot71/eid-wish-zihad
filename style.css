@@ -515,10 +515,10 @@ h2 {
 }
 
 .save-status {
-  min-height: 18px;
+  min-height: 20px;
   margin-top: 12px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .action-buttons {
@@ -553,17 +553,15 @@ h2 {
 }
 
 .share-card-stage {
-  position: fixed;
-  left: 0;
+  position: absolute;
+  left: -10000px;
   top: 0;
   width: 1080px;
   height: 1350px;
-  z-index: -999;
-  pointer-events: none;
   opacity: 1;
-  transform: translateX(-120vw);
+  pointer-events: none;
+  overflow: hidden;
 }
-
 .share-card {
   width: 1080px;
   min-height: 1350px;
@@ -653,8 +651,8 @@ h2 {
 
 @media (min-width: 768px) {
   .eid-card {
-    max-width: 520px;
-    padding: 28px;
+    max-width: 500px;
+    padding: 24px;
   }
 
   .hero-visual {

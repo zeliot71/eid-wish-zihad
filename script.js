@@ -180,11 +180,11 @@ spinBtn.addEventListener("click", function () {
     slotText.innerText = randomReward;
     spinCount++;
 
-    if (spinCount >= 28) {
+    if (spinCount >= 18) {
       clearInterval(spinInterval);
       requestRealRewardFromGoogleSheet();
     }
-  }, 80);
+  }, 65);
 });
 
 shareTextBtn.addEventListener("click", function () {
@@ -226,8 +226,35 @@ function requestRealRewardFromGoogleSheet() {
 
   const callbackName = "handleRewardResponse_" + Date.now();
   let script;
+  let requestFinished = false;
+
+  const timeoutId = setTimeout(function () {
+    if (requestFinished) {
+      return;
+    }
+
+    requestFinished = true;
+
+    slotMachine.classList.remove("slot-running");
+    spinBtn.disabled = false;
+    spinBtn.innerText = "Let’s Spin";
+    saveStatus.innerText = "Server is taking too long. Please try once more.";
+
+    if (script) {
+      script.remove();
+    }
+
+    delete window[callbackName];
+  }, 20000);
 
   window[callbackName] = function (data) {
+    if (requestFinished) {
+      return;
+    }
+
+    requestFinished = true;
+    clearTimeout(timeoutId);
+
     if (!data || data.status !== "success") {
       slotMachine.classList.remove("slot-running");
       spinBtn.disabled = false;
@@ -286,10 +313,17 @@ function requestRealRewardFromGoogleSheet() {
     "&t=" + Date.now();
 
   script.onerror = function () {
+    if (requestFinished) {
+      return;
+    }
+
+    requestFinished = true;
+    clearTimeout(timeoutId);
+
     slotMachine.classList.remove("slot-running");
     spinBtn.disabled = false;
     spinBtn.innerText = "Let’s Spin";
-    saveStatus.innerText = "Network error. Try again.";
+    saveStatus.innerText = "Network issue. Please try again.";
 
     script.remove();
     delete window[callbackName];
