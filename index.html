@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>A Small Eid Wish</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="background-decoration">
+    <span class="star star-1">✦</span>
+    <span class="star star-2">✧</span>
+    <span class="star star-3">✦</span>
+    <span class="star star-4">✧</span>
+    <span class="moon-bg">☾</span>
+  </div>
+
+  <main class="app-container">
+
+    <!-- Screen 1: Welcome -->
+    <section class="screen active" id="welcomeScreen">
+      <div class="eid-card welcome-card">
+
+        <div class="badge">🌙 A Small Eid Wish</div>
+
+        <div class="hero-visual">
+
+          <div class="floating-reaction reaction-one">
+            <img
+              src="https://api.dicebear.com/8.x/adventurer/svg?seed=JuniorA"
+              alt="Profile"
+            />
+            <div>
+              <strong>Rafi</strong>
+              <p>Zihad bhai, Eid wish ta cute hoise 😄</p>
+            </div>
+          </div>
+
+          <div class="floating-reaction reaction-two">
+            <img
+              src="https://api.dicebear.com/8.x/adventurer/svg?seed=SeniorN"
+              alt="Profile"
+            />
+            <div>
+              <strong>Nusrat</strong>
+              <p>Ami salami na, dua paisi — still win 🤲</p>
+            </div>
+          </div>
+
+          <div class="floating-reaction reaction-three">
+            <img
+              src="https://api.dicebear.com/8.x/adventurer/svg?seed=ClassmateR"
+              alt="Profile"
+            />
+            <div>
+              <strong>Sakib</strong>
+              <p>Salami spin ta fun chilo, not bad 🌙</p>
+            </div>
+          </div>
+
+          <div class="image-wrapper">
+            <img
+              src="Me.png"
+              alt="Eid Greeting"
+              class="greeting-image"
+            />
+            <div class="image-glow"></div>
+          </div>
+
+        </div>
+
+        <h1>Eid Mubarak 🌙</h1>
+
+        <p class="intro-text">
+          A small Eid greeting from Zihad — just for fun, with a little salami surprise if luck smiles on you.
+        </p>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label for="visitorName">Your Name</label>
+            <input type="text" id="visitorName" placeholder="Your name" />
+            <small id="nameError"></small>
+          </div>
+
+          <div class="input-group">
+            <label for="bkashNumber">bKash Number</label>
+            <input
+              type="tel"
+              id="bkashNumber"
+              placeholder="01XXXXXXXXX"
+              maxlength="11"
+            />
+            <small id="bkashError"></small>
+          </div>
+        </div>
+
+        <button class="primary-btn" id="startBtn">Open Eid Wish</button>
+
+      </div>
+    </section>
+
+    <!-- Screen 2: Greeting + Wish Input -->
+    <section class="screen" id="wishScreen">
+      <div class="eid-card wish-card">
+
+        <div class="small-moon">☾</div>
+
+        <h2 id="wishTitle">Eid Mubarak 🌙</h2>
+
+        <p id="wishMessage" class="wish-message">
+          May Allah fill your Eid with peace, barakah, good health, and quiet happiness.
+          This is only a small Eid greeting from Zihad, made to share a smile.
+        </p>
+
+        <div class="dua-box">
+          <span>🤲</span>
+          <p>
+            May Allah accept your duas, protect your family,
+            and place barakah in everything good you do.
+          </p>
+        </div>
+
+        <div class="input-group wish-input-group">
+          <label for="visitorWish">Write a small wish for me..</label>
+
+          <textarea
+            id="visitorWish"
+            placeholder="Example: Eid Mubarak Zihad, stay blessed..."
+            maxlength="200"
+          ></textarea>
+
+          <small id="wishError"></small>
+        </div>
+
+        <button class="primary-btn" id="goSpinBtn">Continue to Salami Spin 🎁</button>
+
+      </div>
+    </section>
+
+    <!-- Screen 3: Spin -->
+    <section class="screen" id="spinScreen">
+      <div class="eid-card spin-card">
+
+        <div class="badge">🎁 Eid Fun Spin</div>
+
+        <h2>Try Your Eid Luck</h2>
+
+        <p class="spin-subtitle">
+          Just a light Eid game — you may get a small salami, a dua, or a fun Eid treat.
+        </p>
+
+        <div class="slot-machine" id="slotMachine">
+          <div class="slot-window">
+            <span id="slotText">৳---</span>
+          </div>
+        </div>
+
+        <button class="primary-btn" id="spinBtn">Let’s Spin</button>
+
+        <div class="result-box" id="resultBox">
+          <h3 id="resultTitle"></h3>
+          <p id="resultMessage"></p>
+        </div>
+
+        <div class="save-status" id="saveStatus"></div>
+
+        <div class="action-buttons" id="actionButtons">
+          <button class="secondary-btn" id="shareTextBtn">Share Eid Wish</button>
+          <button class="secondary-btn" id="downloadCardBtn">Download as Card</button>
+          <button class="secondary-btn" id="shareCardBtn">Share as Card</button>
+          <button class="secondary-btn" id="replayBtn">Play Again</button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Hidden Share Card -->
+  <div class="share-card-stage">
+    <div class="share-card" id="shareCardCapture">
+      <div class="share-card-top">
+        <div class="share-pill">🌙 Eid Mubarak</div>
+        <div class="share-moon">☾</div>
+      </div>
+
+      <h3 class="share-card-title" id="shareCardTitle">Eid Mubarak!</h3>
+
+      <p class="share-card-message" id="shareCardMessage">
+        May Allah fill your Eid with peace, barakah, and happiness.
+      </p>
+
+      <div class="share-reward-box">
+        <span>Your Eid surprise</span>
+        <strong id="shareCardReward">৳10 Eid Salami</strong>
+      </div>
+
+      <p class="share-card-footer" id="shareCardFooter">
+        With duas, Zihad
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
