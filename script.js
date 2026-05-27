@@ -295,7 +295,7 @@ function showFinalReward() {
 
   if (finalRewardType === "money") {
     resultMessage.innerText =
-      `You got ${finalReward}. Zihad will try to send it through bKash soon, in shaa Allah. Eid Mubarak!`;
+      `You got ${finalReward}. I will try to send it through bKash soon, in shaa Allah. Eid Mubarak! ~Zihad`;
   } else {
     resultMessage.innerText =
       `You got ${finalReward}. Sometimes the best Eid gift is a smile and a sincere dua.`;
