@@ -43,7 +43,8 @@ const shareCardCapture = document.getElementById("shareCardCapture");
 let visitorName = "";
 let visitorBkash = "";
 let visitorWish = "";
-let finalReward = "";
+let finalRewardType = "";
+let finalRewardValue = 0;
 
 const visualRewards = [
   "৳1 Eid Salami",
@@ -182,11 +183,18 @@ spinBtn.addEventListener("click", function () {
 
     if (spinCount >= 18) {
       clearInterval(spinInterval);
-      requestRealRewardFromGoogleSheet();
+
+      const reward = generateLocalReward();
+
+      finalReward = reward.text;
+      finalRewardType = reward.type;
+      finalRewardValue = reward.value;
+
+      showFinalReward();
+      saveResultSilently();
     }
   }, 65);
 });
-
 shareTextBtn.addEventListener("click", function () {
   const wishText = createFinalWishText();
 
@@ -213,123 +221,129 @@ replayBtn.addEventListener("click", function () {
   resetGame();
 });
 
-function requestRealRewardFromGoogleSheet() {
+function generateLocalReward() {
+  const chance = Math.random();
+
+  /*
+    Phone-safe reward logic:
+    - ৳1–৳10: very common
+    - ৳11–৳30: less common
+    - fun rewards: sometimes
+    - ৳100: very rare
+  */
+
+  if (chance < 0.01 && localStorage.getItem("megaSalamiShown") !== "yes") {
+    localStorage.setItem("megaSalamiShown", "yes");
+
+    return {
+      type: "money",
+      value: 100,
+      text: "৳100 Mega Eid Salami"
+    };
+  }
+
+  if (chance < 0.74) {
+    const amount = Math.floor(Math.random() * 10) + 1;
+
+    return {
+      type: "money",
+      value: amount,
+      text: "৳" + amount + " Eid Salami"
+    };
+  }
+
+  if (chance < 0.88) {
+    const amount = Math.floor(Math.random() * 20) + 11;
+
+    return {
+      type: "money",
+      value: amount,
+      text: "৳" + amount + " Eid Salami"
+    };
+  }
+
+  const funRewards = [
+    {
+      type: "fun",
+      value: 0,
+      text: "Unlimited Dua 🤲"
+    },
+    {
+      type: "fun",
+      value: 0,
+      text: "Chocolate Treat 🍫"
+    },
+    {
+      type: "fun",
+      value: 0,
+      text: "Big Eid Hug 🤗"
+    },
+    {
+      type: "fun",
+      value: 0,
+      text: "Premium Barakah Pack ✨"
+    }
+  ];
+
+  return funRewards[Math.floor(Math.random() * funRewards.length)];
+}
+
+function showFinalReward() {
+  slotText.innerText = finalReward;
+
+  resultTitle.innerText = `Eid Mubarak, ${visitorName}! 🎉`;
+
+  if (finalRewardType === "money") {
+    resultMessage.innerText =
+      `You got ${finalReward}. Zihad will try to send it through bKash soon, in shaa Allah. Eid Mubarak!`;
+  } else {
+    resultMessage.innerText =
+      `You got ${finalReward}. Sometimes the best Eid gift is a smile and a sincere dua.`;
+  }
+
+  updateShareCardContent(finalRewardType);
+
+  resultBox.classList.add("show");
+  actionButtons.classList.add("show");
+  slotMachine.classList.remove("slot-running");
+
+  spinBtn.innerText = "Spin Completed";
+  saveStatus.innerText = "Your Eid surprise is ready.";
+
+  createFloatingItems(30);
+}
+
+function saveResultSilently() {
   if (GOOGLE_SCRIPT_URL === "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
-    slotMachine.classList.remove("slot-running");
-    spinBtn.disabled = false;
-    spinBtn.innerText = "Let’s Spin";
-    saveStatus.innerText = "Google Apps Script URL missing.";
     return;
   }
 
-  saveStatus.innerText = "Checking your Eid surprise...";
-
-  const callbackName = "handleRewardResponse_" + Date.now();
-  let script;
-  let requestFinished = false;
-
-  const timeoutId = setTimeout(function () {
-    if (requestFinished) {
-      return;
-    }
-
-    requestFinished = true;
-
-    slotMachine.classList.remove("slot-running");
-    spinBtn.disabled = false;
-    spinBtn.innerText = "Let’s Spin";
-    saveStatus.innerText = "Server is taking too long. Please try once more.";
-
-    if (script) {
-      script.remove();
-    }
-
-    delete window[callbackName];
-  }, 20000);
-
-  window[callbackName] = function (data) {
-    if (requestFinished) {
-      return;
-    }
-
-    requestFinished = true;
-    clearTimeout(timeoutId);
-
-    if (!data || data.status !== "success") {
-      slotMachine.classList.remove("slot-running");
-      spinBtn.disabled = false;
-      spinBtn.innerText = "Let’s Spin";
-      saveStatus.innerText = "Something went wrong. Please try again.";
-
-      if (script) {
-        script.remove();
-      }
-
-      delete window[callbackName];
-      return;
-    }
-
-    finalReward = data.rewardText;
-    slotText.innerText = finalReward;
-
-    resultTitle.innerText = `Eid Mubarak, ${visitorName}! 🎉`;
-
-    if (data.rewardType === "money") {
-      resultMessage.innerText =
-        `You got ${finalReward}. I will try to send it through bKash soon, in shaa Allah. Eid Mubarak!`;
-    } else {
-      resultMessage.innerText =
-        `You got ${finalReward}. Sometimes the best Eid gift is a smile and a sincere dua.`;
-    }
-
-    updateShareCardContent(data.rewardType);
-
-    resultBox.classList.add("show");
-    actionButtons.classList.add("show");
-    slotMachine.classList.remove("slot-running");
-
-    spinBtn.innerText = "Spin Completed";
-    saveStatus.innerText = "Your Eid surprise is ready.";
-
-    createFloatingItems(30);
-
-    if (script) {
-      script.remove();
-    }
-
-    delete window[callbackName];
-  };
-
-  script = document.createElement("script");
-
-  script.src =
+  const trackingUrl =
     GOOGLE_SCRIPT_URL +
-    "?callback=" + encodeURIComponent(callbackName) +
-    "&visitorName=" + encodeURIComponent(visitorName) +
+    "?visitorName=" + encodeURIComponent(visitorName) +
     "&bkashNumber=" + encodeURIComponent(visitorBkash) +
     "&visitorWish=" + encodeURIComponent(visitorWish) +
+    "&rewardType=" + encodeURIComponent(finalRewardType) +
+    "&rewardValue=" + encodeURIComponent(finalRewardValue) +
+    "&rewardText=" + encodeURIComponent(finalReward) +
     "&deviceInfo=" + encodeURIComponent(navigator.userAgent) +
     "&pageUrl=" + encodeURIComponent(window.location.href) +
     "&t=" + Date.now();
 
-  script.onerror = function () {
-    if (requestFinished) {
-      return;
-    }
+  const img = document.createElement("img");
+  img.src = trackingUrl;
+  img.alt = "";
+  img.style.width = "1px";
+  img.style.height = "1px";
+  img.style.opacity = "0";
+  img.style.position = "fixed";
+  img.style.left = "-9999px";
 
-    requestFinished = true;
-    clearTimeout(timeoutId);
+  document.body.appendChild(img);
 
-    slotMachine.classList.remove("slot-running");
-    spinBtn.disabled = false;
-    spinBtn.innerText = "Let’s Spin";
-    saveStatus.innerText = "Network issue. Please try again.";
-
-    script.remove();
-    delete window[callbackName];
-  };
-
-  document.body.appendChild(script);
+  setTimeout(function () {
+    img.remove();
+  }, 5000);
 }
 
 function updateShareCardContent(rewardType) {
